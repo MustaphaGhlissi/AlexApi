@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\View\View;
 
 use FOS\RestBundle\Controller\Annotations as Rest; // alias pour toutes les annotations
 
@@ -58,7 +59,7 @@ class PagesController extends Controller
 
         //check if there is an object with the $id
          if (empty($page)) {
-            return new JsonResponse(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+            return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
         }
 
         return $page;
@@ -69,7 +70,7 @@ class PagesController extends Controller
      * @param Request $request
      * @return JsonResponse
      * @Rest\View(statusCode=Response::HTTP_CREATED)
-     * @Rest\Post("/pages")
+     * @Rest\Post("/pages", name="create_page")
      */
     public function postPagesAction(Request $request)
     {
@@ -106,7 +107,7 @@ class PagesController extends Controller
      * @param Request $request
      * @return JsonResponse
      * @Rest\View(statusCode=Response::HTTP_NO_CONTENT)
-     * @Rest\Delete("/pages/{id}")
+     * @Rest\Delete("/pages/{id}", name="delete_page")
      */
     public function deletePageAction(Request $request)
     {
@@ -119,10 +120,12 @@ class PagesController extends Controller
         if ($page) {
             $em->remove($page);
             $em->flush();
-            return new JsonResponse(['message' => 'Page deleted succesfuly '], Response::HTTP_NOT_FOUND);
+            return View::create(['message' => 'Page deleted succesfuly'], Response::HTTP_ACCEPTED);
+
         }
         else{
-        	return new JsonResponse(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+        	return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+
         }
     }
 
@@ -132,7 +135,7 @@ class PagesController extends Controller
      * @param Request $request
      * @return JsonResponse
      * @Rest\View(statusCode=Response::HTTP_NO_CONTENT)
-     * @Rest\Patch("/pages/{id}")
+     * @Rest\Put("/pages/{id}", name="update_one_page", requirements={"id"="\d+"})
      */
     public function putPageAction(Request $request)
     {
@@ -143,12 +146,52 @@ class PagesController extends Controller
         /* @var $page Pages */
 
         if (empty($page)) {
-            return new JsonResponse(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+        	return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
         }	
 
-        $page->setTitle($request->get('title'));
+        else{
 
+        $page->setTitle($request->get('title'));
+		$page->setMetaTags($request->get('metaTags'));
+		$page->setMetaDescription($request->get('metaDescription'));
+    	$page->setPageType($request->get('pageType'));
+    	$page->setPageLayout($request->get('pageLayout'));
+    	$page->setSlug($request->get('slug'));
+    	$page->setCountry($request->get('country'));
+    	$page->setSoundbite($request->get('soundbit'));
+    	$page->setDescription($request->get('description'));
+    	$page->setAutoselect($request->get('autoSelect'));
+    	$page->setUpdatedAt(new \DateTime('now'));
 		$em->persist($page);
         $em->flush();
+
+         return View::create(['message' => 'Page updated succesfuly'], Response::HTTP_ACCEPTED);
+
+        }
     }
+
+
+    /**
+	 * GET ALL ROWS IN PAGE
+	 * @param Request $request
+	 * @return JsonResponse
+	 * @Rest\View()
+     * @Rest\Get("/pages/{id}/rows", name="pages_rows_list", requirements={"id"="\d+"})
+     */
+    public function getPagesRowsAction(Request $request)
+    {
+    	//get Doctrine manager
+        $em = $this->getDoctrine()->getManager();
+        //find  pages($id) objects
+        $page = $em->getRepository(Pages::class)->find($request->get('id'));
+
+         if (empty($page)) {
+        	return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+        }	
+
+      	 return $place->getRows();
+    }
+
+
+   
 }	

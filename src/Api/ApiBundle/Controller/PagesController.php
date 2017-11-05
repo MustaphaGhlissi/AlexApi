@@ -9,7 +9,11 @@
 namespace Api\ApiBundle\Controller;
 
 
+use Api\ApiBundle\Entity\Pages;
+use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class PagesController extends Controller
 {

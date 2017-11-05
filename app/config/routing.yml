@@ -1,9 +1,15 @@
-api:
-    resource: "@ApiBundle/Controller/"
-    type:     annotation
-    prefix:   /
+#api:
+#    resource: "@ApiBundle/Controller/"
+#    type:     annotation
+#    prefix:   /
 
+materials:
+    type:     rest
+    resource: "@ApiBundle/Controller/MaterialsController.php"
 
+categories:
+    type:     rest
+    resource: "@ApiBundle/Controller/CategoriesController.php"
 
 
 

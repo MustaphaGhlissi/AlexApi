@@ -10,42 +10,38 @@ namespace Api\ApiBundle\Controller;
 
 
 use Api\ApiBundle\Entity\Materials;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations as Rest;
 
 class MaterialsController extends Controller
 {
+
     /**
-     * @Route("/materials", name="materials_list")
-     * @Method({"GET", "POST"})
+     * @Rest\View()
+     * @Rest\Get("/materials")
      */
     public function getMaterialsAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $materials = $em->getRepository(Materials::class)->findAll();
-
-        return new JsonResponse($materials);
+        return $materials;
     }
 
 
     /**
-     * @param Request $request
-     * @param $id
-     * @return JsonResponse
-     * @Route("/materials/{id}", name="materials_one", requirements={"id"="\d+"})
-     * @Method("GET")
+     * @Rest\View()
+     * @Rest\Get("/materials/{id}")
      */
-    public function getMaterialAction(Request $request)
+    public function getMaterialAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $material = $em->getRepository(Materials::class)->find($request->get('id'));
+        $material = $em->getRepository(Materials::class)->find($id);
         if (!$material) {
             return new JsonResponse(['message' => 'Material not found'], Response::HTTP_NOT_FOUND);
         }
-        return new JsonResponse($material);
+        return $material;
     }
 }

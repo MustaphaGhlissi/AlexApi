@@ -11,8 +11,10 @@ categories:
     type:     rest
     resource: "@ApiBundle/Controller/CategoriesController.php"
 
+pages:
+    type:     rest
+    resource: "@ApiBundle/Controller/PagesController.php"
 
-
-
-
-
+homepage_settings:
+    type:     rest
+    resource: "@ApiBundle/Controller/HomePageController.php"

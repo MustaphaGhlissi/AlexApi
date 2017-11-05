@@ -49,11 +49,6 @@ class Pages
     private $thumbnail;
 
     /**
-     * @ORM\OneToOne(targetEntity="Api\ApiBundle\Entity\Pages")
-     */
-    private $parent;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -61,6 +56,14 @@ class Pages
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="parent_id", type="integer")
+     */
+    private $parentId;
 
     /**
      * @var string

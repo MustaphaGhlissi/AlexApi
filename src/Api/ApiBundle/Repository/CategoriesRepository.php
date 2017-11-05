@@ -10,4 +10,13 @@ namespace Api\ApiBundle\Repository;
  */
 class CategoriesRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findMenu()
+    {
+        $qb = $this->createQueryBuilder('m');
+        $query = $qb->select('m')
+            ->orderBy('m.position', 'desc')
+            ->getQuery();
+
+        return $query->getResult();
+    }
 }

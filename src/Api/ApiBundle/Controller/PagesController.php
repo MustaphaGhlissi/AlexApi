@@ -189,9 +189,108 @@ class PagesController extends Controller
         	return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
         }	
 
-      	 return $place->getRows();
+      	 return $page->getRows();
     }
 
 
-   
+     /**
+	 * POST  ROWS IN PAGE
+	 * @param Request $request
+	 * @return JsonResponse
+	 * @Rest\View(statusCode=Response::HTTP_CREATED)
+     * @Rest\Post("/pages/{id}/rows", name="pages_rows_list", requirements={"id"="\d+"})
+     */
+    public function postPagesRowsAction(Request $request)
+    {
+    	 
+        $page = new Pages();
+
+        $row = new Rows();
+    	
+    	//set Page Object attributes
+    	$page->setTitle($request->get('title'));
+		$page->setMetaTags($request->get('metaTags'));
+		$page->setMetaDescription($request->get('metaDescription'));
+    	$page->setPageType($request->get('pageType'));
+    	$page->setPageLayout($request->get('pageLayout'));
+    	$page->setSlug($request->get('slug'));
+    	$page->setCountry($request->get('country'));
+    	$page->setDate(new \DateTime('now'));
+    	$page->setSoundbite($request->get('soundbit'));
+    	$page->setDescription($request->get('description'));
+    	$page->setAutoselect($request->get('autoSelect'));
+    	$page->setUpdatedAt(new \DateTime('now'));
+
+
+    	$row->setCols($request->get('cols'));
+    	$row->setPosition($request->get('positions'));
+    	$row->setUpdatedAt(new \DateTime('now'));
+
+    	$row->setPages();
+    	$page->addRow($row);
+
+
+		//save Object into the DB
+		$em = $this->getDoctrine()->getManager();
+        $em->persist($page);
+        $em->flush();
+
+        return $page;
+    }
+
+
+     /**
+     * @param Request $request
+     * @return JsonResponse
+     * @Rest\View()
+     * @Rest\Get("/pages/{id}/rows/{id_row}", name="pages_one_row", requirements={"id"="\d+")
+     */
+    public function getPagesRowAction(Request $request)
+    {
+    	//get Doctrine manager
+        $em = $this->getDoctrine()->getManager();
+        //find  pages($id) objects
+        $page = $em->getRepository(Pages::class)->find($request->get('id'));
+
+
+         if (empty($page)) {
+        	return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+        }
+        else{
+
+        	$row = $em->getRepository(Rows::class)->find($request->get('id_row'));
+
+        	return  $row;
+
+        }
+    }	
+
+
+
+     /**
+     * @param Request $request
+     * @return JsonResponse
+     * @Rest\View()
+     * @Rest\Get("/pages/{id}/rows/{id_row}/content", name="pages_one_row_content", requirements={"id"="\d+", "id_row"="\d+")
+     */
+    public function getPagesRowAction(Request $request)
+    {
+    	//get Doctrine manager
+        $em = $this->getDoctrine()->getManager();
+        //find  pages($id) objects
+        $page = $em->getRepository(Pages::class)->find($request->get('id'));
+
+
+         if (empty($page)) {
+        	return View::create(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+        }
+        else{
+
+        	$row = $em->getRepository(Rows::class)->find($request->get('id_row'));
+        	$content = $row->getContent();
+
+        	return  $row;
+
+        }
+    }	
 }	

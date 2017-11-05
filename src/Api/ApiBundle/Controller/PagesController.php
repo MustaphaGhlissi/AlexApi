@@ -100,6 +100,7 @@ class PagesController extends Controller
 
     }
 
+
     /**
      * DELETE ONE PAGE
      * @param Request $request
@@ -107,22 +108,47 @@ class PagesController extends Controller
      * @Rest\View(statusCode=Response::HTTP_NO_CONTENT)
      * @Rest\Delete("/pages/{id}")
      */
-    public function removePageAction(Request $request)
+    public function deletePageAction(Request $request)
     {
        //get Doctrine manager
         $em = $this->getDoctrine()->getManager();
         //get page by id
         $page = $em->getRepository(Pages::class)->find($request->get('id'));
-        /* @var $place Place */
+        /* @var $page Pages */
 
         if ($page) {
             $em->remove($page);
             $em->flush();
-            return new JsonResponse(['message' => 'Page deletes succesfuly '], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['message' => 'Page deleted succesfuly '], Response::HTTP_NOT_FOUND);
         }
         else{
         	return new JsonResponse(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
         }
     }
 
-}
+
+    /**
+     * UPDATE ONE PAGE
+     * @param Request $request
+     * @return JsonResponse
+     * @Rest\View(statusCode=Response::HTTP_NO_CONTENT)
+     * @Rest\Patch("/pages/{id}")
+     */
+    public function putPageAction(Request $request)
+    {
+    	//get Doctrine manager
+        $em = $this->getDoctrine()->getManager();
+        //get page by id
+        $page = $em->getRepository(Pages::class)->find($request->get('id'));
+        /* @var $page Pages */
+
+        if (empty($page)) {
+            return new JsonResponse(['message' => 'Page not found'], Response::HTTP_NOT_FOUND);
+        }	
+
+        $page->setTitle($request->get('title'));
+
+		$em->persist($page);
+        $em->flush();
+    }
+}	
